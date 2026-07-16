@@ -48,7 +48,7 @@
     }
 
     button {
-      min-width: 132px;
+      min-width: 80px;
       min-height: 48px;
       border: 0;
       border-radius: 12px;
@@ -61,6 +61,7 @@
 
     #run-button { background: #ffffff; color: #111111; }
     #status-button { background: #ffd54f; color: #111111; }
+    #run-x2-button { background: #FF9966; color: #111111; } 
 
     .hint {
       display: block;
@@ -99,10 +100,15 @@
       const arLabel = document.querySelector('#ar-label');
       const topPanel = document.querySelector('#top-panel');
       const runButton = document.querySelector('#run-button');
+      const runx2Button = document.querySelector('#run-x2-button');
       const statusButton = document.querySelector('#status-button');
+      const normalSpeed = 220;
+      const fastSpeed = 440;
 
       let running = true;
       let warning = false;
+      let fastMode = false;
+      let currentSpeed = normalSpeed;
 
       marker.addEventListener('markerFound', () => {
         topPanel.innerHTML = 'พบ Hiro Marker แล้ว — โมเดลมอเตอร์พร้อมใช้งาน<span class="hint">แตะปุ่มด้านล่างเพื่อทดลองควบคุม</span>';
@@ -114,21 +120,46 @@
 
       runButton.addEventListener('click', () => {
         running = !running;
-        shaft.setAttribute('spin-control', 'active', running);
+
+        shaft.setAttribute('spin-control', {
+          active: running,
+          speed: currentSpeed
+        });
+
         runButton.textContent = running ? 'หยุดมอเตอร์' : 'เริ่มมอเตอร์';
       });
+
+
+
+      runx2Button.addEventListener('click', () => {
+
+      fastMode = !fastMode;
+
+      currentSpeed = fastMode ? fastSpeed : normalSpeed;
+
+      shaft.setAttribute('spin-control', {
+        active: running,
+        speed: currentSpeed
+      });
+
+      runx2Button.textContent = fastMode
+        ? 'หมุนปกติ'
+        : 'หมุนเร็ว x2';
+    });
+
+
 
       statusButton.addEventListener('click', () => {
         warning = !warning;
 
         if (warning) {
-          motorBody.setAttribute('color', '#ef5350');
+          motorBody.setAttribute('color', '#CCFF33'); // 
           warningLamp.setAttribute('color', '#ff1744');
           warningLamp.setAttribute('material', 'emissive', '#ff1744');
           arLabel.setAttribute('value', 'MOTOR M1\nSTATUS: WARNING');
           statusButton.textContent = 'เปลี่ยนเป็นปกติ';
         } else {
-          motorBody.setAttribute('color', '#1976d2');
+          motorBody.setAttribute('color', '#669966');// 
           warningLamp.setAttribute('color', '#00e676');
           warningLamp.setAttribute('material', 'emissive', '#00c853');
           arLabel.setAttribute('value', 'MOTOR M1\nSTATUS: NORMAL');
@@ -148,6 +179,7 @@
   <div id="controls">
     <button id="run-button" type="button">หยุดมอเตอร์</button>
     <button id="status-button" type="button">จำลองคำเตือน</button>
+    <button id="run-x2-button" type="button">หมุนเร็ว x2มอเตอร์</button>
   </div>
 
   <a-scene
